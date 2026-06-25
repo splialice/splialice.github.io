@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核心服务 - 达生创业 OPC</title>
+    <meta name="description" content="达生创业提供创业陪跑、项目展示、知识中心、智能体服务等全方位创业支持服务。">
+    <meta name="keywords" content="创业陪跑,创业服务,OPC,一人公司,创业咨询">
+    <link rel="canonical" href="https://www.opcnihao.cn/fuwu.php">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+        .logo span { color: #ff6b35; }
+        nav a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #ff6b35; }
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .hero p { color: rgba(255,255,255,0.8); font-size: 1.1rem; }
+        
+        section { padding: 60px 0; }
+        .bg-white { background: white; }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .section-title h2 {
+            font-size: 2rem;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+        .section-title p { color: #666; }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            border-top: 4px solid #ff6b35;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .service-card h3 {
+            color: #1a1a2e;
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+        .service-card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        .service-features {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .service-features li {
+            padding: 4px 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        .service-features li::before {
+            content: "✓ ";
+            color: #ff6b35;
+            font-weight: bold;
+        }
+        .service-link {
+            display: inline-block;
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+        .service-link:hover { text-decoration: underline; }
+        
+        .cta {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 0;
+        }
+        .cta h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .cta p { color: rgba(255,255,255,0.8); margin-bottom: 1.5rem; }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            background: #ff6b35;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: #1a1a2e;
+            color: rgba(255,255,255,0.7);
+            padding: 30px 0;
+            text-align: center;
+        }
+        footer a { color: #ff6b35; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <a href="/" class="logo">达生创业<span>.</span></a>
+        <nav>
+            <a href="/">首页</a>
+            <a href="/about.html">关于我们</a>
+            <a href="/services.html">服务</a>
+            <a href="/articles/">文章</a>
+            <a href="https://www.opcnihao.cn/" target="_blank">官网</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h1>核心服务</h1>
+        <p>全方位创业支持，陪你从 0 到 1</p>
+    </div>
+</section>
+
+<section class="bg-white">
+    <div class="container">
+        <div class="section-title">
+            <h2>我们的服务</h2>
+            <p>根据你的创业阶段，提供针对性的陪跑服务</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>创业陪跑服务</h3>
+                <p>从 0 到 1 全程陪伴，帮你搭建一人公司的底层系统。不是高高在上的咨询，而是并肩作战的陪伴。</p>
+                <ul class="service-features">
+                    <li>商业模式打磨</li>
+                    <li>团队建设指导</li>
+                    <li>融资策略规划</li>
+                    <li>运营问题解决</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/fuwu.php" class="service-link" target="_blank">了解详情 →</a>
+            </div>
+            <div class="service-card">
+                <h3>项目展示平台</h3>
+                <p>展示我们陪跑过的成功案例，涵盖电商、SaaS、内容创作等多个领域。</p>
+                <ul class="service-features">
+                    <li>真实案例拆解</li>
+                    <li>成长路径分析</li>
+                    <li>行业对比数据</li>
+                    <li>可复制的经验</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/xiangmu.php" class="service-link" target="_blank">查看案例 →</a>
+            </div>
+            <div class="service-card">
+                <h3>知识中心</h3>
+                <p>系统化的创业知识库，包含创业方法论、实战工具包、行业洞察等内容。</p>
+                <ul class="service-features">
+                    <li>创业方法论课程</li>
+                    <li>实战工具包</li>
+                    <li>行业趋势报告</li>
+                    <li>专家直播分享</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/academy/" class="service-link" target="_blank">进入学院 →</a>
+            </div>
+            <div class="service-card">
+                <h3>智能体服务</h3>
+                <p>AI 驱动的创业助手，7x24 小时为你解答创业问题，提供决策支持。</p>
+                <ul class="service-features">
+                    <li>智能问答系统</li>
+                    <li>决策辅助分析</li>
+                    <li>资源智能匹配</li>
+                    <li>24小时在线</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/denglu.php" class="service-link" target="_blank">体验智能体 →</a>
+            </div>
+            <div class="service-card">
+                <h3>种子用户计划</h3>
+                <p>帮助早期项目快速获取第一批种子用户，验证产品市场匹配度。</p>
+                <ul class="service-features">
+                    <li>用户画像分析</li>
+                    <li>获客渠道搭建</li>
+                    <li>转化漏斗优化</li>
+                    <li>反馈收集系统</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/seed.php" class="service-link" target="_blank">了解计划 →</a>
+            </div>
+            <div class="service-card">
+                <h3>OPC 入门营</h3>
+                <p>2 天线上集训 + 30 天社群陪跑，帮你从 0 搭建一人公司的底层系统。</p>
+                <ul class="service-features">
+                    <li>8节实战音频课</li>
+                    <li>专属工具包</li>
+                    <li>学员交流群</li>
+                    <li>导师答疑</li>
+                </ul>
+                <a href="https://www.opcnihao.cn/buy-course.php" class="service-link" target="_blank">立即报名 →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <h2>不确定哪个服务适合你？</h2>
+        <p>预约一次免费咨询，我们会根据你的情况推荐最适合的服务方案</p>
+        <a href="https://www.opcnihao.cn/contact.php" class="btn" target="_blank">预约免费咨询</a>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p> 达生创业 OPC | 专业创业陪跑服务机构</p>
+        <p style="margin-top: 8px;">
+            官方网站：<a href="https://www.opcnihao.cn/" target="_blank">www.opcnihao.cn</a>
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
