@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>达生创业 OPC - 专业创业陪跑服务机构</title>
-    <meta name="description" content="达生创业，OPC创业陪跑服务机构。从0到1陪伴每一位创业者，提供创业咨询、团队建设、商业模式打磨、融资策略规划等全方位服务。">
-    <meta name="keywords" content="创业陪跑,创业咨询,OPC,一人公司,创业服务,达生创业">
+    <title>创业文章 - 达生创业 OPC</title>
+    <meta name="description" content="达生创业精选创业干货文章，涵盖一人公司、创业方法论、AI创业等主题。">
+    <meta name="keywords" content="创业文章,一人公司,创业方法论,创业干货">
     <link rel="canonical" href="https://www.opcnihao.cn/">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,7 +17,6 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
-        /* Header */
         header {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
@@ -48,133 +47,28 @@
         }
         nav a:hover { color: #ff6b35; }
         
-        /* Hero */
         .hero {
-            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 50%, #1a1a2e 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
             color: white;
-            padding: 100px 0 80px;
+            padding: 80px 0 60px;
             text-align: center;
         }
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        .hero h1 span { color: #ff6b35; }
-        .hero p {
-            font-size: 1.25rem;
-            color: rgba(255,255,255,0.8);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-        .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin: 0 8px;
-        }
-        .btn-primary {
-            background: #ff6b35;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #e55a2b;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255,107,53,0.3);
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .hero p { color: rgba(255,255,255,0.8); font-size: 1.1rem; }
         
-        /* Stats */
-        .stats {
-            background: white;
-            padding: 60px 0;
-            margin-top: -40px;
-            position: relative;
-            z-index: 10;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #ff6b35;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
+        section { padding: 60px 0; }
         
-        /* Sections */
-        section { padding: 80px 0; }
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
         .section-title h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: #1a1a2e;
             margin-bottom: 0.5rem;
         }
-        .section-title p {
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .section-title p { color: #666; }
         
-        /* Services */
-        .services {
-            background: white;
-        }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        .service-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 2rem;
-            border-left: 4px solid #ff6b35;
-            transition: all 0.3s;
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        .service-card h3 {
-            color: #1a1a2e;
-            margin-bottom: 0.75rem;
-            font-size: 1.2rem;
-        }
-        .service-card p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-        
-        /* Articles */
-        .articles {
-            background: #f8f9fa;
-        }
         .articles-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -194,6 +88,15 @@
         .article-content {
             padding: 1.5rem;
         }
+        .article-tag {
+            display: inline-block;
+            background: rgba(255,107,53,0.1);
+            color: #ff6b35;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
         .article-content h3 {
             color: #1a1a2e;
             margin-bottom: 0.5rem;
@@ -212,42 +115,41 @@
         }
         .article-link:hover { text-decoration: underline; }
         
-        /* CTA */
         .cta {
             background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
             color: white;
             text-align: center;
-            padding: 80px 0;
+            padding: 60px 0;
         }
-        .cta h2 {
-            font-size: 2.2rem;
-            margin-bottom: 1rem;
+        .cta h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .cta p { color: rgba(255,255,255,0.8); margin-bottom: 1.5rem; }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            background: #ff6b35;
+            color: white;
+            transition: all 0.3s;
         }
-        .cta p {
-            color: rgba(255,255,255,0.8);
-            max-width: 500px;
-            margin: 0 auto 2rem;
+        .btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
         }
         
-        /* Footer */
         footer {
             background: #1a1a2e;
             color: rgba(255,255,255,0.7);
-            padding: 40px 0;
+            padding: 30px 0;
             text-align: center;
         }
-        footer a {
-            color: #ff6b35;
-            text-decoration: none;
-        }
+        footer a { color: #ff6b35; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
         
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 1.8rem; }
             nav { display: none; }
-            .btn { display: block; margin: 8px auto; max-width: 280px; }
         }
     </style>
 </head>
@@ -268,74 +170,21 @@
 
 <section class="hero">
     <div class="container">
-        <h1>专业创业陪跑，让成功更简单</h1>
-        <p>达生创业 OPC — 从 0 到 1，我们陪你每一步。实战经验 + 系统方法 = 可复制的成功</p>
-        <a href="https://www.opcnihao.cn/contact.php" class="btn btn-primary" target="_blank">预约免费咨询</a>
-        <a href="https://www.opcnihao.cn/xiangmu.php" class="btn btn-secondary" target="_blank">查看项目案例</a>
+        <h1>创业干货</h1>
+        <p>实战经验分享，助你少走弯路</p>
     </div>
 </section>
 
-<section class="stats">
-    <div class="stats-grid container">
-        <div>
-            <div class="stat-number">500+</div>
-            <div class="stat-label">服务创业者</div>
-        </div>
-        <div>
-            <div class="stat-number">95%</div>
-            <div class="stat-label">客户满意度</div>
-        </div>
-        <div>
-            <div class="stat-number">50+</div>
-            <div class="stat-label">成功案例</div>
-        </div>
-        <div>
-            <div class="stat-number">3年+</div>
-            <div class="stat-label">平均陪跑周期</div>
-        </div>
-    </div>
-</section>
-
-<section class="services">
-    <div class="container">
-        <div class="section-title">
-            <h2>核心服务</h2>
-            <p>经过数百个案例验证的系统化陪跑服务</p>
-        </div>
-        <div class="services-grid">
-            <div class="service-card">
-                <h3>创业陪跑</h3>
-                <p>从 0 到 1 全程陪伴，帮你搭建一人公司的底层系统。不是高高在上的咨询，而是并肩作战的陪伴。</p>
-                <a href="https://www.opcnihao.cn/fuwu.php" class="article-link" target="_blank">了解详情 →</a>
-            </div>
-            <div class="service-card">
-                <h3>项目展示</h3>
-                <p>展示我们陪跑过的成功案例，涵盖电商、SaaS、内容创作等多个领域，让你看到真实的成长路径。</p>
-                <a href="https://www.opcnihao.cn/xiangmu.php" class="article-link" target="_blank">查看案例 →</a>
-            </div>
-            <div class="service-card">
-                <h3>知识中心</h3>
-                <p>系统化的创业知识库，包含创业方法论、实战工具包、行业洞察等内容，助你快速成长。</p>
-                <a href="https://www.opcnihao.cn/academy/" class="article-link" target="_blank">进入学院 →</a>
-            </div>
-            <div class="service-card">
-                <h3>智能体服务</h3>
-                <p>AI 驱动的创业助手，7x24 小时为你解答创业问题，提供决策支持和资源对接。</p>
-                <a href="https://www.opcnihao.cn/denglu.php" class="article-link" target="_blank">体验智能体 →</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="articles">
+<section>
     <div class="container">
         <div class="section-title">
             <h2>精选文章</h2>
-            <p>创业干货分享，助你少走弯路</p>
+            <p>关于创业、一人公司、AI创业的深度思考</p>
         </div>
         <div class="articles-grid">
             <div class="article-card">
                 <div class="article-content">
+                    <span class="article-tag">创业方法论</span>
                     <h3>什么是 OPC 一人公司陪跑模式？</h3>
                     <p>深入解析 On-demand Partner Coaching 模式，为什么它能帮助创业者从 0 到 1 快速突破。</p>
                     <a href="/articles/opc-model.html" class="article-link">阅读全文 →</a>
@@ -343,6 +192,7 @@
             </div>
             <div class="article-card">
                 <div class="article-content">
+                    <span class="article-tag">赛道分析</span>
                     <h3>2024 年最适合一人公司的 5 个赛道</h3>
                     <p>结合市场趋势和实战数据，分析当前最适合个人创业者切入的赛道和机会。</p>
                     <a href="/articles/niches-2024.html" class="article-link">阅读全文 →</a>
@@ -350,9 +200,66 @@
             </div>
             <div class="article-card">
                 <div class="article-content">
+                    <span class="article-tag">案例拆解</span>
                     <h3>从 0 到月入 10 万：一人公司成长路径</h3>
                     <p>真实案例拆解，一个普通人如何通过 OPC 陪跑，在 6 个月内实现收入突破。</p>
                     <a href="/articles/growth-path.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">AI创业</span>
+                    <h3>AI 时代，一人公司如何借力起飞</h3>
+                    <p>探讨 AI 工具如何赋能个人创业者，降低创业门槛，提升 10 倍效率。</p>
+                    <a href="/articles/ai-startup.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">商业模式</span>
+                    <h3>一人公司的 6 种盈利模型</h3>
+                    <p>从产品型到服务型，从订阅制到佣金制，全面分析一人公司可行的商业模式。</p>
+                    <a href="/articles/revenue-models.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">心态建设</span>
+                    <h3>创业者必读的 10 个心智模型</h3>
+                    <p>从第一性原理到反脆弱，帮创业者建立正确的思维方式和决策框架。</p>
+                    <a href="/articles/mental-models.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">AI工具</span>
+                    <h3>我在Coze被官方AI坑惨了：这才是付费技能上架拿案例链接的唯一正解</h3>
+                    <p>全网独一份的2026年最新版Coze付费技能上架实操指南，揭秘官方AI误导的坑。</p>
+                    <a href="/articles/coze-paid-skill.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">创业实战</span>
+                    <h3>100块买了个教训：新站做支付</h3>
+                    <p>新站接入支付的血泪教训，从WorkBuddy积分消耗到支付渠道选择的深度复盘。</p>
+                    <a href="/articles/xin-zhan-zuo-zhi-fu.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">行业观察</span>
+                    <h3>下载站的黄昏</h3>
+                    <p>从PC时代流量入口到移动互联网边缘化，下载站兴衰背后的平台逻辑与创业者启示。</p>
+                    <a href="/articles/xia-zai-zhan-huang-hun.html" class="article-link">阅读全文 →</a>
+                </div>
+            </div>
+            <div class="article-card">
+                <div class="article-content">
+                    <span class="article-tag">AI工具</span>
+                    <h3>AI的"对齐税"：我们为了安全，正在批量生产"高级复读机"</h3>
+                    <p>深度解析AI创造力枯竭现象，揭秘RLHF机制如何扼杀大模型的灵魂，附三条反直觉Prompt指令。</p>
+                    <a href="/articles/ai-duiqi-shui-ray.html" class="article-link">阅读全文 →</a>
                 </div>
             </div>
         </div>
@@ -361,9 +268,9 @@
 
 <section class="cta">
     <div class="container">
-        <h2>准备好开始你的创业之旅了吗？</h2>
-        <p>加入达生创业 OPC，让专业的陪跑团队陪你从 0 到 1</p>
-        <a href="https://www.opcnihao.cn/contact.php" class="btn btn-primary" target="_blank">立即咨询</a>
+        <h2>想获取更多创业干货？</h2>
+        <p>访问达生创业知识中心，获取更多系统化的创业课程和资源</p>
+        <a href="https://www.opcnihao.cn/academy/" class="btn" target="_blank">进入知识中心</a>
     </div>
 </section>
 
@@ -371,9 +278,7 @@
     <div class="container">
         <p> 达生创业 OPC | 专业创业陪跑服务机构</p>
         <p style="margin-top: 8px;">
-            官方网站：<a href="https://www.opcnihao.cn/" target="_blank">www.opcnihao.cn</a> |
-            <a href="https://www.opcnihao.cn/about.php" target="_blank">关于我们</a> |
-            <a href="https://www.opcnihao.cn/contact.php" target="_blank">联系我们</a>
+            官方网站：<a href="https://www.opcnihao.cn/" target="_blank">www.opcnihao.cn</a>
         </p>
     </div>
 </footer>
