@@ -1,0 +1,661 @@
+name: Sync OPC Articles to GitHub Pages (Summary Mode)
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天北京时间 10 点运行
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch latest articles from OPC main site
+        id: fetch_articles
+        run: |
+          echo "📡 正在从 OPC 主站拉取最新文章..."
+          
+          RESPONSE=$(curl -s --max-time 30 "https://www.opcnihao.cn/admin/articles_feed.php?format=json&days=365&limit=200")
+          
+          if [ -z "$RESPONSE" ]; then
+            echo "::error::无法获取文章数据，主站可能不可用"
+            exit 1
+          fi
+          
+          echo "$RESPONSE" > articles_data.json
+          
+          COUNT=$(echo "$RESPONSE" | jq '.query.count')
+          echo "✅ 成功获取 $COUNT 篇文章"
+          echo "article_count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Generate GitHub Pages site
+        run: |
+          python3 << 'PYTHON_EOF'
+          import json
+          import html
+          import os
+          from datetime import datetime
+          
+          SITE_NAME = "达生创业 OPC"
+          SITE_URL = "https://www.opcnihao.cn"
+          GH_URL = "https://splialice.github.io"
+          GH_REPO = "https://github.com/splialice/splialice.github.io"
+          INDEXNOW_KEY = "51773d28057a42208253a6c1daeeedf2"
+          
+          with open('articles_data.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+          
+          articles = data.get('articles', [])
+          
+          # 基础样式
+          BASE_STYLE = """
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              background: #f8f9fa;
+          }
+          .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+          
+          header {
+              background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+              color: white;
+              padding: 1rem 0;
+              position: sticky;
+              top: 0;
+              z-index: 100;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          header .container {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+          .logo {
+              font-size: 1.5rem;
+              font-weight: bold;
+              color: #fff;
+              text-decoration: none;
+          }
+          .logo span { color: #ff6b35; }
+          nav a {
+              color: rgba(255,255,255,0.9);
+              text-decoration: none;
+              margin-left: 2rem;
+              font-size: 0.95rem;
+              transition: color 0.3s;
+          }
+          nav a:hover { color: #ff6b35; }
+          
+          .hero {
+              background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+              color: white;
+              padding: 80px 0 60px;
+              text-align: center;
+          }
+          .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+          .hero p { color: rgba(255,255,255,0.8); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+          
+          section { padding: 60px 0; }
+          .bg-white { background: white; }
+          
+          .section-title {
+              text-align: center;
+              margin-bottom: 2.5rem;
+          }
+          .section-title h2 {
+              font-size: 2rem;
+              color: #1a1a2e;
+              margin-bottom: 0.5rem;
+          }
+          .section-title p { color: #666; }
+          
+          .articles-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+              gap: 2rem;
+          }
+          .article-card {
+              background: white;
+              border-radius: 12px;
+              padding: 1.5rem;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+              transition: all 0.3s;
+          }
+          .article-card:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          }
+          .article-tag {
+              display: inline-block;
+              background: rgba(255,107,53,0.1);
+              color: #ff6b35;
+              padding: 2px 10px;
+              border-radius: 20px;
+              font-size: 0.8rem;
+              margin-bottom: 0.5rem;
+          }
+          .article-card h3 {
+              color: #1a1a2e;
+              margin-bottom: 0.5rem;
+              font-size: 1.1rem;
+          }
+          .article-card p {
+              color: #666;
+              font-size: 0.9rem;
+              margin-bottom: 1rem;
+          }
+          .article-link {
+              color: #ff6b35;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 0.9rem;
+          }
+          .article-link:hover { text-decoration: underline; }
+          
+          .btn {
+              display: inline-block;
+              padding: 12px 32px;
+              border-radius: 8px;
+              text-decoration: none;
+              font-weight: 600;
+              transition: all 0.3s;
+              margin: 0 8px;
+          }
+          .btn-primary {
+              background: #ff6b35;
+              color: white;
+          }
+          .btn-primary:hover {
+              background: #e55a2b;
+              transform: translateY(-2px);
+              box-shadow: 0 8px 20px rgba(255,107,53,0.3);
+          }
+          
+          footer {
+              background: #1a1a2e;
+              color: rgba(255,255,255,0.7);
+              padding: 40px 0;
+              text-align: center;
+          }
+          footer a {
+              color: #ff6b35;
+              text-decoration: none;
+          }
+          footer a:hover { text-decoration: underline; }
+          
+          @media (max-width: 768px) {
+              .hero h1 { font-size: 2rem; }
+              nav { display: none; }
+              .btn { display: block; margin: 8px auto; max-width: 280px; }
+          }
+          """
+          
+          # 公共头部
+          def header(active=''):
+              nav_items = [
+                  ('/', '首页'),
+                  ('/about.html', '关于我们'),
+                  ('/services.html', '服务'),
+                  ('/articles/', '文章'),
+                  ('https://www.opcnihao.cn/', '官网'),
+              ]
+              nav_html = ''.join([
+                  f'<a href="{href}" class="active">{text}</a>' if href == active else f'<a href="{href}">{text}</a>'
+                  for href, text in nav_items
+              ])
+              return f'''
+          <header>
+              <div class="container">
+                  <a href="/" class="logo">达生<span>创业</span></a>
+                  <nav>{nav_html}</nav>
+              </div>
+          </header>
+          '''
+          
+          def footer():
+              return f'''
+          <footer>
+              <div class="container">
+                  <p>© {datetime.now().year} {SITE_NAME} | 专业创业陪跑服务机构</p>
+                  <p style="margin-top: 8px;">
+                      官方主站：<a href="{SITE_URL}" target="_blank">www.opcnihao.cn</a> |
+                      <a href="{SITE_URL}/about.php" target="_blank">关于我们</a> |
+                      <a href="{SITE_URL}/contact.php" target="_blank">联系我们</a>
+                  </p>
+                  <p style="margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.5);">
+                      本页面由 <a href="{GH_REPO}" target="_blank">GitHub Actions</a> 自动同步更新
+                  </p>
+              </div>
+          </footer>
+          '''
+          
+          def page(title, description, canonical, content, robots='index, follow'):
+              return f'''<!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>{html.escape(title)}</title>
+              <meta name="description" content="{html.escape(description)}">
+              <meta name="robots" content="{robots}">
+              <link rel="canonical" href="{canonical}">
+              <style>{BASE_STYLE}</style>
+          </head>
+          <body>
+              {content}
+          </body>
+          </html>'''
+          
+          os.makedirs('github-pages/articles', exist_ok=True)
+          
+          # ===== 1. 生成首页 =====
+          recent_articles = articles[:6]
+          recent_cards = '\n'.join([
+              f'''
+              <div class="article-card">
+                  <span class="article-tag">{html.escape(a.get('category', '未分类'))}</span>
+                  <h3>{html.escape(a.get('title', ''))}</h3>
+                  <p>{html.escape(a.get('description', '')[:120])}...</p>
+                  <a href="/articles/{html.escape(a.get('slug', ''))}.html" class="article-link">阅读摘要 →</a>
+              </div>
+              ''' for a in recent_articles
+          ])
+          
+          home_content = f'''
+          {header('/')}
+          
+          <section class="hero">
+              <div class="container">
+                  <h1>专业创业陪跑，让成功更简单</h1>
+                  <p>达生创业 OPC — 从 0 到 1，我们陪你每一步。实战经验 + 系统方法 = 可复制的成功。</p>
+                  <a href="{SITE_URL}/contact.php" class="btn btn-primary" target="_blank">预约免费咨询</a>
+                  <a href="/articles/" class="btn btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);">浏览文章</a>
+              </div>
+          </section>
+          
+          <section class="bg-white">
+              <div class="container">
+                  <div class="section-title">
+                      <h2>核心服务</h2>
+                      <p>经过数百个案例验证的系统化陪跑服务</p>
+                  </div>
+                  <div class="articles-grid">
+                      <div class="article-card">
+                          <h3>创业陪跑</h3>
+                          <p>从 0 到 1 全程陪伴，帮你搭建一人公司的底层系统。</p>
+                          <a href="{SITE_URL}/fuwu.php" class="article-link" target="_blank">了解详情 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>项目展示</h3>
+                          <p>展示我们陪跑过的成功案例，涵盖电商、SaaS、内容创作等多个领域。</p>
+                          <a href="{SITE_URL}/xiangmu.php" class="article-link" target="_blank">查看案例 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>知识中心</h3>
+                          <p>系统化的创业知识库，包含创业方法论、实战工具包、行业洞察等内容。</p>
+                          <a href="{SITE_URL}/academy/" class="article-link" target="_blank">进入学院 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>智能体服务</h3>
+                          <p>AI 驱动的创业助手，7x24 小时为你解答创业问题，提供决策支持。</p>
+                          <a href="{SITE_URL}/denglu.php" class="article-link" target="_blank">体验智能体 →</a>
+                      </div>
+                  </div>
+              </div>
+          </section>
+          
+          <section>
+              <div class="container">
+                  <div class="section-title">
+                      <h2>精选文章</h2>
+                      <p>创业干货分享，助你少走弯路</p>
+                  </div>
+                  <div class="articles-grid">
+                      {recent_cards}
+                  </div>
+                  <div style="text-align: center; margin-top: 40px;">
+                      <a href="/articles/" class="btn btn-primary">查看全部文章</a>
+                  </div>
+              </div>
+          </section>
+          
+          {footer()}
+          '''
+          
+          with open('github-pages/index.html', 'w', encoding='utf-8') as f:
+              f.write(page(
+                  f'{SITE_NAME} - 专业创业陪跑服务机构',
+                  '达生创业，OPC创业陪跑服务机构。从0到1陪伴每一位创业者，提供创业咨询、团队建设、商业模式打磨、融资策略规划等全方位服务。',
+                  f'{GH_URL}/',
+                  home_content
+              ))
+          
+          # ===== 2. 生成关于我们 =====
+          about_content = f'''
+          {header('/about.html')}
+          
+          <section class="hero">
+              <div class="container">
+                  <h1>关于我们</h1>
+                  <p>一群热爱创业的陪跑者，陪你走过从 0 到 1 的每一步</p>
+              </div>
+          </section>
+          
+          <section class="bg-white">
+              <div class="container">
+                  <div style="max-width: 800px; margin: 0 auto; font-size: 1.05rem; line-height: 1.8; color: #444;">
+                      <p style="margin-bottom: 1.2rem;"><strong>达生创业</strong>是一家专注于 <strong>OPC（On-demand Partner Coaching）</strong> 陪跑模式的创业服务机构。</p>
+                      <p style="margin-bottom: 1.2rem;">我们的使命是<strong>让创业不再孤单</strong>。从商业模式打磨、团队建设、融资策略到运营问题解决，我们用实战经验和系统方法，陪伴创业者完成从 0 到 1 的突破。</p>
+                      <p style="margin-bottom: 1.2rem;">我们相信，创业不是一个人的战斗。每一个伟大的企业，最初都只是一群不愿放弃的人。</p>
+                      
+                      <div style="background: #f8f9fa; padding: 24px; border-radius: 12px; margin: 2rem 0;">
+                          <h3 style="color: #1a1a2e; margin-bottom: 1rem;">核心数据</h3>
+                          <ul style="margin-left: 1.5rem; color: #555;">
+                              <li>500+ 服务创业者</li>
+                              <li>95% 客户满意度</li>
+                              <li>50+ 成功案例</li>
+                              <li>3年+ 平均陪跑周期</li>
+                          </ul>
+                      </div>
+                      
+                      <p style="text-align: center; margin-top: 2rem;">
+                          <a href="{SITE_URL}/about.php" class="btn btn-primary" target="_blank">访问官网了解更多</a>
+                      </p>
+                  </div>
+              </div>
+          </section>
+          
+          {footer()}
+          '''
+          
+          with open('github-pages/about.html', 'w', encoding='utf-8') as f:
+              f.write(page(
+                  f'关于我们 - {SITE_NAME}',
+                  '了解达生创业的创立故事、OPC陪跑方法论和核心价值观。我们是一群热爱创业的陪跑者，陪你走过从0到1的每一步。',
+                  f'{SITE_URL}/about.php',
+                  about_content
+              ))
+          
+          # ===== 3. 生成服务页 =====
+          services_content = f'''
+          {header('/services.html')}
+          
+          <section class="hero">
+              <div class="container">
+                  <h1>核心服务</h1>
+                  <p>经过数百个案例验证的系统化陪跑服务</p>
+              </div>
+          </section>
+          
+          <section class="bg-white">
+              <div class="container">
+                  <div class="articles-grid">
+                      <div class="article-card">
+                          <h3>创业陪跑</h3>
+                          <p>从 0 到 1 全程陪伴，帮你搭建一人公司的底层系统。不是高高在上的咨询，而是并肩作战的陪伴。</p>
+                          <a href="{SITE_URL}/fuwu.php" class="article-link" target="_blank">了解详情 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>项目展示</h3>
+                          <p>展示我们陪跑过的成功案例，涵盖电商、SaaS、内容创作等多个领域，让你看到真实的成长路径。</p>
+                          <a href="{SITE_URL}/xiangmu.php" class="article-link" target="_blank">查看案例 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>知识中心</h3>
+                          <p>系统化的创业知识库，包含创业方法论、实战工具包、行业洞察等内容，助你快速成长。</p>
+                          <a href="{SITE_URL}/academy/" class="article-link" target="_blank">进入学院 →</a>
+                      </div>
+                      <div class="article-card">
+                          <h3>智能体服务</h3>
+                          <p>AI 驱动的创业助手，7x24 小时为你解答创业问题，提供决策支持和资源对接。</p>
+                          <a href="{SITE_URL}/denglu.php" class="article-link" target="_blank">体验智能体 →</a>
+                      </div>
+                  </div>
+                  
+                  <div style="text-align: center; margin-top: 50px;">
+                      <a href="{SITE_URL}/contact.php" class="btn btn-primary" target="_blank">预约咨询</a>
+                  </div>
+              </div>
+          </section>
+          
+          {footer()}
+          '''
+          
+          with open('github-pages/services.html', 'w', encoding='utf-8') as f:
+              f.write(page(
+                  f'核心服务 - {SITE_NAME}',
+                  '达生创业提供创业陪跑、项目展示、知识中心、智能体服务等全方位创业支持服务。',
+                  f'{SITE_URL}/fuwu.php',
+                  services_content
+              ))
+          
+          # ===== 4. 生成文章列表页 =====
+          all_cards = '\n'.join([
+              f'''
+              <div class="article-card">
+                  <span class="article-tag">{html.escape(a.get('category', '未分类'))}</span>
+                  <h3>{html.escape(a.get('title', ''))}</h3>
+                  <p>{html.escape(a.get('description', '')[:150])}...</p>
+                  <div style="color: #999; font-size: 0.85rem; margin-bottom: 1rem;">
+                      {html.escape(a.get('published_at', ''))} · {html.escape(a.get('author', '鱼喵'))}
+                  </div>
+                  <a href="/articles/{html.escape(a.get('slug', ''))}.html" class="article-link">阅读摘要 →</a>
+              </div>
+              ''' for a in articles
+          ])
+          
+          list_content = f'''
+          {header('/articles/')}
+          
+          <section class="hero">
+              <div class="container">
+                  <h1>创业文章</h1>
+                  <p>精选创业干货，涵盖一人公司、创业方法论、AI创业等主题</p>
+              </div>
+          </section>
+          
+          <section class="bg-white">
+              <div class="container">
+                  <div class="section-title">
+                      <h2>全部文章</h2>
+                      <p>共 {len(articles)} 篇文章，持续更新中</p>
+                  </div>
+                  <div class="articles-grid">
+                      {all_cards}
+                  </div>
+                  
+                  <div style="text-align: center; margin-top: 50px; padding: 30px; background: #f8f9fa; border-radius: 12px;">
+                      <p style="color: #666; margin-bottom: 1rem;">想要阅读更多创业干货？访问我们的官方主站知识中心</p>
+                      <a href="{SITE_URL}/academy/" class="btn btn-primary" target="_blank">进入知识中心</a>
+                  </div>
+              </div>
+          </section>
+          
+          {footer()}
+          '''
+          
+          with open('github-pages/articles/index.html', 'w', encoding='utf-8') as f:
+              f.write(page(
+                  f'创业文章 - {SITE_NAME}',
+                  '达生创业精选创业干货文章，涵盖一人公司、创业方法论、AI创业等主题。',
+                  f'{GH_URL}/articles/',
+                  list_content
+              ))
+          
+          # ===== 5. 生成每篇文章摘要页 =====
+          for i, a in enumerate(articles):
+              slug = a.get('slug', '')
+              title = a.get('title', '')
+              description = a.get('description', '')
+              url = a.get('url', '')
+              category = a.get('category', '未分类')
+              author = a.get('author', '鱼喵')
+              published = a.get('published_at', '')
+              updated = a.get('updated_at', published)
+              tags = a.get('tags', [])
+              
+              # 相关文章：取前后各1篇
+              related = []
+              if i > 0:
+                  related.append(articles[i-1])
+              if i < len(articles) - 1:
+                  related.append(articles[i+1])
+              
+              related_html = ''
+              if related:
+                  related_cards = '\n'.join([
+                      f'''
+                      <div class="article-card">
+                          <span class="article-tag">{html.escape(r.get('category', '未分类'))}</span>
+                          <h3>{html.escape(r.get('title', ''))}</h3>
+                          <a href="/articles/{html.escape(r.get('slug', ''))}.html" class="article-link">阅读摘要 →</a>
+                      </div>
+                      ''' for r in related
+                  ])
+                  related_html = f'''
+                  <div style="margin-top: 50px;">
+                      <h3 style="color: #1a1a2e; margin-bottom: 1.5rem;">相关文章</h3>
+                      <div class="articles-grid">
+                          {related_cards}
+                      </div>
+                  </div>
+                  '''
+              
+              tags_html = ''
+              if tags:
+                  tags_str = ' '.join([f'<span class="article-tag">{html.escape(str(t))}</span>' for t in tags])
+                  tags_html = f'<div style="margin: 1rem 0;">{tags_str}</div>'
+              
+              article_content = f'''
+              {header('/articles/')}
+              
+              <section class="hero" style="padding: 60px 0 40px;">
+                  <div class="container">
+                      <h1 style="font-size: 2rem;">{html.escape(title)}</h1>
+                      <p style="margin-top: 1rem;">{html.escape(category)} · {html.escape(author)} · {html.escape(published)}</p>
+                  </div>
+              </section>
+              
+              <section class="bg-white">
+                  <div class="container">
+                      <div style="max-width: 800px; margin: 0 auto;">
+                          {tags_html}
+                          <div style="font-size: 1.05rem; line-height: 1.8; color: #444; margin: 2rem 0;">
+                              <p style="margin-bottom: 1.5rem;"><strong>摘要：</strong>{html.escape(description)}</p>
+                              
+                              <div style="background: rgba(255,107,53,0.08); border-left: 4px solid #ff6b35; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0;">
+                                  <p style="margin: 0 0 1rem 0; color: #1a1a2e; font-weight: 600;">📌 完整内容已发布在官方主站</p>
+                                  <p style="margin: 0 0 1.5rem 0; color: #666;">本文仅展示摘要，点击按钮阅读完整文章。</p>
+                                  <a href="{url}" class="btn btn-primary" target="_blank" rel="noopener">阅读完整文章</a>
+                              </div>
+                              
+                              <p style="color: #999; font-size: 0.9rem;">
+                                  最后更新：{html.escape(updated)}<br>
+                                  原文链接：<a href="{url}" target="_blank" rel="noopener" style="color: #ff6b35;">{html.escape(url)}</a>
+                              </p>
+                          </div>
+                          
+                          {related_html}
+                      </div>
+                  </div>
+              </section>
+              
+              {footer()}
+              '''
+              
+              with open(f'github-pages/articles/{slug}.html', 'w', encoding='utf-8') as f:
+                  f.write(page(
+                      f'{title} - {SITE_NAME}',
+                      description[:150],
+                      url,
+                      article_content
+                  ))
+          
+          # ===== 6. 生成 sitemap.xml =====
+          urls = [f'{GH_URL}/', f'{GH_URL}/about.html', f'{GH_URL}/services.html', f'{GH_URL}/articles/']
+          for a in articles:
+              urls.append(f'{GH_URL}/articles/{a.get("slug", "")}.html')
+          
+          sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
+          sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+          for u in urls:
+              sitemap += f'  <url>\n    <loc>{html.escape(u)}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n'
+          sitemap += '</urlset>'
+          
+          with open('github-pages/sitemap.xml', 'w', encoding='utf-8') as f:
+              f.write(sitemap)
+          
+          # ===== 7. 生成 IndexNow 验证文件 =====
+          with open(f'github-pages/{INDEXNOW_KEY}.txt', 'w', encoding='utf-8') as f:
+              f.write(INDEXNOW_KEY)
+          
+          # 保存 URL 列表供后续 IndexNow 推送使用
+          with open('url_list.json', 'w', encoding='utf-8') as f:
+              json.dump(urls, f, ensure_ascii=False)
+          
+          # 复制 BingSiteAuth.xml（如果存在）
+          if os.path.exists('BingSiteAuth.xml'):
+              import shutil
+              shutil.copy('BingSiteAuth.xml', 'github-pages/BingSiteAuth.xml')
+              print("✅ 已复制 BingSiteAuth.xml")
+          
+          print(f"✅ 已生成 {len(articles)} 篇文章摘要页")
+          print(f"✅ 站点文件生成完成")
+          PYTHON_EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./github-pages
+          publish_branch: gh-pages
+          force_orphan: true
+
+      - name: Push IndexNow notification
+        if: success()
+        run: |
+          echo "📢 正在通过 IndexNow 通知 Bing..."
+          
+          curl -s -X POST "https://api.indexnow.org/IndexNow" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"host\": \"splialice.github.io\",
+              \"key\": \"51773d28057a42208253a6c1daeeedf2\",
+              \"urlList\": $(cat url_list.json)
+            }"
+          
+          echo "✅ IndexNow 推送完成"
+
+      - name: Summary
+        run: |
+          echo "## 🎉 OPC 文章同步完成！" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**同步统计**：" >> $GITHUB_STEP_SUMMARY
+          echo "- 📝 文章数量：${{ steps.fetch_articles.outputs.article_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ⏰ 同步时间：$(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 GitHub Pages：[查看](https://splialice.github.io/)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SEO 策略**：" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ 文章摘要页：原创内容，可收录，canonical 指向主站" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ 首页/列表页：原创内容，可收录，带 dofollow 外链" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ 关于/服务页：保留展示，canonical 指向主站" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ 无完整重复内容，避免 Bing 惩罚" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ IndexNow 自动推送，加速 Bing 重新抓取" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**生成的文件**：" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 index.html（首页）" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 about.html（关于我们）" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 services.html（服务）" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 articles/index.html（文章列表）" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 articles/*.html（${{ steps.fetch_articles.outputs.article_count }}个摘要页）" >> $GITHUB_STEP_SUMMARY
+          echo "- 🗺️ sitemap.xml（站点地图）" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔑 IndexNow 验证文件" >> $GITHUB_STEP_SUMMARY
